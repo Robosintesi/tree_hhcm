@@ -1,4 +1,5 @@
 #include <tree_hhcm/robot/robot_joint_state_trajectory.h>
+#include <set>
 
 using namespace tree;
 
@@ -26,6 +27,9 @@ BT::NodeStatus tree::RobotJointStateTrajectory::onStart()
         _p.cout() << "overriding q_start with provided input q_start" << _qstart.transpose().format(2) << std::endl;
     }
 
+    std::vector<std::string> joint_names;
+    getInput("joint_names", joint_names);
+
     std::string q_goal_name;
     if(getInput("q_goal_name", q_goal_name))
     {
@@ -33,9 +37,46 @@ BT::NodeStatus tree::RobotJointStateTrajectory::onStart()
 
         _qgoal = _model->getRobotState(q_goal_name);
     }
-    else if(!getInput("q_goal", _qgoal))
+    else
     {
-        throw BT::RuntimeError("missing required input [q_goal] or [q_goal_name]");
+        Eigen::VectorXd q_goal_in;
+        if(!getInput("q_goal", q_goal_in))
+        {
+            throw BT::RuntimeError("missing required input [q_goal] or [q_goal_name]");
+        }
+
+        if(!joint_names.empty())
+        {
+            if(q_goal_in.size() != (int)joint_names.size())
+            {
+                throw BT::RuntimeError("q_goal size (" + std::to_string(q_goal_in.size()) + ") must match joint_names size (" + std::to_string(joint_names.size()) + ")");
+            }
+            // Override q_goal with current robot state
+            _model->getJointPosition(_qgoal);
+            // Set only the joints specified in joint_names
+            for(size_t i = 0; i < joint_names.size(); ++i)
+            {
+                int idx = _model->getJointInfo(joint_names[i]).iq;
+                _qgoal(idx) = q_goal_in(i);
+            }
+            // Set delta q for unspecified joints to zero
+            std::set<int> keep;
+            for(const auto &name : joint_names)
+            {
+                int idx = _model->getJointInfo(name).iq;
+                _p.cout() << "Moving joint " << name << " (idx " << idx << ")\n";
+                keep.insert(idx);
+            }
+            for(int i = 0; i < _deltaq.size(); ++i)
+            {
+                if(!keep.count(i))
+                    _deltaq(i) = 0.0;
+            }
+        }
+        else
+        {
+            _qgoal = q_goal_in;
+        }
     }
 
     if(!getInput("duration", _duration))
@@ -94,6 +135,7 @@ BT::PortsList tree::RobotJointStateTrajectory::providedPorts()
         BT::InputPort<std::string>("q_goal_name", "Name of the robot state to use as goal joint configuration. Overrides the current robot configuration"),
         BT::InputPort<double>("duration", "Duration of the trajectory [s]"),
         BT::InputPort<std::vector<int>>("fixed_idx", "Indices of joints to keep fixed during the trajectory"),
+        BT::InputPort<std::vector<std::string>>("joint_names", "Names of the joints to control"),
         BT::OutputPort<Eigen::VectorXd>("q", "Current joint configuration")
     };
 }
