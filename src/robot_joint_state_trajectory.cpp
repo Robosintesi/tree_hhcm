@@ -18,6 +18,10 @@ BT::NodeStatus tree::RobotJointStateTrajectory::onStart()
         throw BT::RuntimeError("missing required input [model]");
     }
 
+    _keep.clear();
+    _compose = false;
+    getInput("compose", _compose);
+
     _model->getJointPosition(_qstart);
 
     
@@ -60,16 +64,15 @@ BT::NodeStatus tree::RobotJointStateTrajectory::onStart()
                 _qgoal(idx) = q_goal_in(i);
             }
             // Set delta q for unspecified joints to zero
-            std::set<int> keep;
             for(const auto &name : joint_names)
             {
                 int idx = _model->getJointInfo(name).iq;
                 _p.cout() << "Moving joint " << name << " (idx " << idx << ")\n";
-                keep.insert(idx);
+                _keep.insert(idx);
             }
             for(int i = 0; i < _deltaq.size(); ++i)
             {
-                if(!keep.count(i))
+                if(!_keep.count(i))
                     _deltaq(i) = 0.0;
             }
         }
@@ -77,6 +80,11 @@ BT::NodeStatus tree::RobotJointStateTrajectory::onStart()
         {
             _qgoal = q_goal_in;
         }
+    }
+
+    if(_compose && _keep.empty())
+    {
+        throw BT::RuntimeError("compose=true requires [joint_names]");
     }
 
     if(!getInput("duration", _duration))
@@ -110,6 +118,16 @@ BT::NodeStatus tree::RobotJointStateTrajectory::onRunning()
     // integrate interpolated delta q from q start
     Eigen::VectorXd q = _model->sum(_qstart, alpha*_deltaq);
 
+    if(_compose && !_keep.empty())
+    {
+        // move only the controlled joints
+        Eigen::VectorXd qcurrent;
+        _model->getJointPosition(qcurrent);
+        for(int idx : _keep)
+            qcurrent(idx) = q(idx);
+        q = qcurrent;
+    }
+
     // set to model and update
     _model->setJointPosition(q);
     _model->update();
@@ -136,6 +154,7 @@ BT::PortsList tree::RobotJointStateTrajectory::providedPorts()
         BT::InputPort<double>("duration", "Duration of the trajectory [s]"),
         BT::InputPort<std::vector<int>>("fixed_idx", "Indices of joints to keep fixed during the trajectory"),
         BT::InputPort<std::vector<std::string>>("joint_names", "Names of the joints to control"),
+        BT::InputPort<bool>("compose", "Move only [joint_names] over the live state, leaving other joints at the current state. Requires [joint_names]. Default false."),
         BT::OutputPort<Eigen::VectorXd>("q", "Current joint configuration")
     };
 }
