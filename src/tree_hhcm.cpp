@@ -12,6 +12,7 @@
 #include <tree_hhcm/robot/robot_gripper_ctrl.h>
 #include <tree_hhcm/robot/robot_joint_state_trajectory.h>
 #include <tree_hhcm/robot/robot_collision_check.h>
+#include <tree_hhcm/robot/robot_set_joint_impedance.h>
 
 #include <tree_hhcm/cartesio/cartesio_cartesian_task_control.h>
 #include <tree_hhcm/cartesio/cartesio_loader.h>
@@ -34,6 +35,7 @@ BT_REGISTER_NODES(factory)
     factory.registerNodeType<tree::RobotGripperCtrl>("RobotGripperCtrl");
     factory.registerNodeType<tree::RobotJointStateTrajectory>("RobotJointStateTrajectory");
     factory.registerNodeType<tree::RobotCollisionCheck>("RobotCollisionCheck");
+    factory.registerNodeType<tree::RobotSetJointImpedance>("RobotSetJointImpedance");
     
     factory.registerNodeType<tree::CartesioLoader>("CartesioLoader");
     factory.registerNodeType<tree::CartesioSolve>("CartesioSolve");

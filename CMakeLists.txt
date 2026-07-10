@@ -10,6 +10,7 @@ find_package(behaviortree_cpp REQUIRED)
 find_package(cartesian_interface REQUIRED)
 find_package(cartesian_interface_ros REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(xbot_msgs REQUIRED)
 
 # the library
 add_library(tree_hhcm SHARED 
@@ -24,6 +25,7 @@ add_library(tree_hhcm SHARED
   src/robot_joint_state_trajectory.cpp
   src/robot_gripper_ctrl.cpp
   src/robot_collision_check.cpp
+  src/robot_set_joint_impedance.cpp
   src/node_provider.cpp
   src/wait_setbool.cpp
   src/tree_hhcm.cpp
@@ -39,6 +41,7 @@ target_link_libraries(tree_hhcm
     cartesian_interface::CartesianInterface
     cartesian_interface_ros::CartesianInterfaceRos
     rclcpp::rclcpp
+    ${xbot_msgs_TARGETS}
     )
 
 target_include_directories(tree_hhcm PUBLIC
