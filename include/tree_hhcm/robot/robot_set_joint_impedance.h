@@ -12,7 +12,6 @@
 #include <xbot_msgs/msg/joint_command.hpp>
 #include <xbot_msgs/msg/joint_state.hpp>
 
-#include <chrono>
 #include <cstdint>
 #include <map>
 #include <optional>
@@ -71,8 +70,11 @@ private:
     std::vector<float> _stiffness_0;
     std::vector<double> _damping_0;
 
-    std::optional<std::chrono::steady_clock::time_point> _transition_start;
-    std::chrono::steady_clock::time_point _deadline;
+    // tick-driven time (tree_dt per tick): pausing the executor
+    // freezes the ramp instead of making it jump forward on resume
+    double _time = 0.0;
+    std::optional<double> _transition_start;
+    double _timeout = 2.0;
 
     double _transition_time = 2.0;
 

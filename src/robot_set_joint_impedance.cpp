@@ -50,11 +50,6 @@ std::optional<std::size_t> index_of(const std::vector<std::string>& names,
     return static_cast<std::size_t>(std::distance(names.begin(), it));
 }
 
-double seconds_since(std::chrono::steady_clock::time_point t0)
-{
-    return std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
-}
-
 } // anonymous namespace
 
 namespace tree {
@@ -170,13 +165,10 @@ BT::NodeStatus RobotSetJointImpedance::onStart()
         throw BT::RuntimeError("RobotSetJointImpedance: [transition_time] must be greater than 1.0");
     }
 
-    double timeout = 2.0;
-    getInput("timeout", timeout);
+    _timeout = 2.0;
+    getInput("timeout", _timeout);
 
-    _deadline = std::chrono::steady_clock::now() +
-                std::chrono::duration_cast<std::chrono::steady_clock::duration>(
-                    std::chrono::duration<double>(timeout));
-
+    _time = 0.0;
     _transition_start.reset();
     _joint_state.reset();
 
@@ -201,13 +193,15 @@ BT::NodeStatus RobotSetJointImpedance::onRunning()
 
     if(!_joint_state)
     {
-        if(std::chrono::steady_clock::now() > _deadline)
+        if(_time > _timeout)
         {
             _p.cerr() << "timed out: no joint state on " << joint_state_topic
                       << ", is xbot2 running?\n";
 
             return BT::NodeStatus::FAILURE;
         }
+
+        _time += Globals::instance().tree_dt;
 
         return BT::NodeStatus::RUNNING;
     }
@@ -219,11 +213,11 @@ BT::NodeStatus RobotSetJointImpedance::onRunning()
             return BT::NodeStatus::FAILURE;
         }
 
-        _transition_start = std::chrono::steady_clock::now();
+        _transition_start = _time;
     }
 
     const double alpha = _transition_time > 0.0
-        ? blend(seconds_since(*_transition_start)/_transition_time)
+        ? blend((_time - *_transition_start)/_transition_time)
         : 1.0;
 
     for(std::size_t i = 0; i < _target.name.size(); ++i)
@@ -236,6 +230,8 @@ BT::NodeStatus RobotSetJointImpedance::onRunning()
 
     _cmd.header.stamp = _node->now();
     _pub->publish(_cmd);
+
+    _time += Globals::instance().tree_dt;
 
     return alpha < 1.0 ? BT::NodeStatus::RUNNING : BT::NodeStatus::SUCCESS;
 }

@@ -11,6 +11,8 @@ find_package(cartesian_interface REQUIRED)
 find_package(cartesian_interface_ros REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(xbot_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 # the library
 add_library(tree_hhcm SHARED 
@@ -28,6 +30,7 @@ add_library(tree_hhcm SHARED
   src/robot_set_joint_impedance.cpp
   src/node_provider.cpp
   src/wait_setbool.cpp
+  src/pause_server.cpp
   src/tree_hhcm.cpp
   src/common.cpp
   src/load_pose_from_config.cpp
@@ -42,6 +45,8 @@ target_link_libraries(tree_hhcm
     cartesian_interface_ros::CartesianInterfaceRos
     rclcpp::rclcpp
     ${xbot_msgs_TARGETS}
+    ${std_srvs_TARGETS}
+    ${std_msgs_TARGETS}
     )
 
 target_include_directories(tree_hhcm PUBLIC

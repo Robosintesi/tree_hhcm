@@ -2,6 +2,7 @@
 
 #include <tree_hhcm/common/common.h>
 #include <tree_hhcm/common/config_value.h>
+#include <tree_hhcm/ros/pause_server.h>
 
 #include <iostream>
 #include <string>
@@ -227,6 +228,9 @@ int main(int argc, char **argv)
         p.cout() << "Set param (string) " << key << " := " << value_str << "\n";
     }
 
+    // pause/resume service
+    tree::PauseServer pause_server(name);
+
     // run tree until ctrl+c
     std::chrono::duration<double> dt(1.0 / rate);
     std::chrono::duration<double> stats_dt(2.0);
@@ -237,6 +241,16 @@ int main(int argc, char **argv)
     while (g_running)
     {
         auto t_next = std::chrono::steady_clock::now() + dt;
+
+        // while paused, skip ticking: node-internal time advances by
+        // tree_dt per tick, so the whole mission freezes in place
+        if (pause_server.paused())
+        {
+            niters = 0;
+            t_report_next = std::chrono::steady_clock::now() + stats_dt;
+            std::this_thread::sleep_until(t_next);
+            continue;
+        }
 
         // tick the tree
         auto status = tree.tickOnce();
