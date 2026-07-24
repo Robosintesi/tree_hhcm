@@ -3,6 +3,7 @@
 #include <tree_hhcm/common/common.h>
 #include <tree_hhcm/common/config_value.h>
 #include <tree_hhcm/ros/pause_server.h>
+#include <tree_hhcm/common/mission_group.h>
 
 #include <iostream>
 #include <string>
@@ -230,6 +231,12 @@ int main(int argc, char **argv)
 
     // pause/resume service
     tree::PauseServer pause_server(name);
+
+    // warn about ungrouped nodes
+    for (const auto &path : tree::find_ungrouped_nodes(tree))
+    {
+        p.cerr() << "warning: [" << path << "] is not inside any MissionGroup\n";
+    }
 
     // run tree until ctrl+c
     std::chrono::duration<double> dt(1.0 / rate);

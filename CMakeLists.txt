@@ -31,6 +31,8 @@ add_library(tree_hhcm SHARED
   src/node_provider.cpp
   src/wait_setbool.cpp
   src/pause_server.cpp
+  src/mission_group.cpp
+  src/mission_tracker.cpp
   src/tree_hhcm.cpp
   src/common.cpp
   src/load_pose_from_config.cpp

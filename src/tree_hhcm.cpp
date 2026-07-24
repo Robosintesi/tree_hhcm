@@ -2,8 +2,10 @@
 
 #include <tree_hhcm/common/load_pose_from_config.h>
 #include <tree_hhcm/common/load_param_from_config.h>
+#include <tree_hhcm/common/mission_group.h>
 
 #include <tree_hhcm/ros/node_provider.h>
+#include <tree_hhcm/ros/mission_tracker.h>
 #include <tree_hhcm/ros/wait_setbool.h>
 
 #include <tree_hhcm/robot/robot_loader.h>
@@ -25,8 +27,10 @@ BT_REGISTER_NODES(factory)
 {
     factory.registerNodeType<tree::LoadPoseFromConfig>("LoadPoseFromConfig");
     factory.registerNodeType<tree::LoadParamFromConfig>("LoadParamFromConfig");
+    factory.registerNodeType<tree::MissionGroup>("MissionGroup");
 
     factory.registerNodeType<tree::NodeProvider>("NodeProvider");
+    factory.registerNodeType<tree::MissionTracker>("MissionTracker");
     factory.registerNodeType<tree::WaitSetBool>("WaitSetBool");
 
     factory.registerNodeType<tree::RobotLoader>("RobotLoader");
