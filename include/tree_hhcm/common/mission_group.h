@@ -123,6 +123,9 @@ public:
     // name of the repeated item, e.g. "vial"
     const std::string& cycle_label() const;
 
+    // true for a group that wraps the stages (the full mission): skipped as stage, lets next cross stages
+    bool wrap_stages() const;
+
 private:
 
     BT::NodeStatus tick() override;
@@ -133,6 +136,7 @@ private:
     int _cycle = -1;
     int _cycle_count = 0;
     std::string _cycle_label;
+    bool _wrap_stages = false;
 
 };
 

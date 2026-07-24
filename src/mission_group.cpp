@@ -207,7 +207,23 @@ MissionGroupRegistry::State MissionGroupRegistry::state() const
     const auto& info = _groups.at(innermost);
 
     s.current = info.name;
-    s.stage = _groups.at(_active.front()).name;
+
+    // skip the full-mission wrapper so stage is the phase, not "Full Mission":
+    //   <MissionGroup name="Full Mission" wrap_stages="true">   <- skipped
+    //     <Sequence name="FullMission">
+    //       <SubTree ID="Uncapping"/>                            <- the stage is one of these
+    //       <SubTree ID="Fluent"/>
+    //       <SubTree ID="Capping"/>
+    //       <SubTree ID="Spark"/>
+    //     </Sequence>
+    //   </MissionGroup>
+    size_t stage_idx = 0;
+    while(stage_idx + 1 < _active.size() && _active[stage_idx]->wrap_stages())
+    {
+        ++stage_idx;
+    }
+    s.stage = _groups.at(_active[stage_idx]).name;
+
     s.previous = _last_done;
 
     if(const auto* next = next_of(innermost))
@@ -242,6 +258,7 @@ BT::PortsList MissionGroup::providedPorts()
         BT::InputPort<int>("cycle", "current iteration of the loop this group wraps, 0-based"),
         BT::InputPort<int>("cycle_count", "total number of iterations of that loop"),
         BT::InputPort<std::string>("cycle_label", "name of the repeated item, e.g. 'vial'"),
+        BT::InputPort<bool>("wrap_stages", false, "marks a group that wraps the stages (the full mission): skipped as stage, lets next cross stages"),
     };
 }
 
@@ -260,6 +277,11 @@ const std::string& MissionGroup::cycle_label() const
     return _cycle_label;
 }
 
+bool MissionGroup::wrap_stages() const
+{
+    return _wrap_stages;
+}
+
 void MissionGroup::read_cycle_ports()
 {
     if(auto v = getInput<int>("cycle"))
@@ -275,6 +297,11 @@ void MissionGroup::read_cycle_ports()
     if(auto v = getInput<std::string>("cycle_label"))
     {
         _cycle_label = v.value();
+    }
+
+    if(auto v = getInput<bool>("wrap_stages"))
+    {
+        _wrap_stages = v.value();
     }
 }
 
