@@ -13,6 +13,7 @@
 #include <tree_hhcm/robot/robot_sense.h>
 #include <tree_hhcm/robot/robot_gripper_ctrl.h>
 #include <tree_hhcm/robot/robot_joint_state_trajectory.h>
+#include <tree_hhcm/robot/robot_play_trajectory.h>
 #include <tree_hhcm/robot/robot_collision_check.h>
 #include <tree_hhcm/robot/robot_set_joint_impedance.h>
 
@@ -38,6 +39,7 @@ BT_REGISTER_NODES(factory)
     factory.registerNodeType<tree::RobotMove>("RobotMove");
     factory.registerNodeType<tree::RobotGripperCtrl>("RobotGripperCtrl");
     factory.registerNodeType<tree::RobotJointStateTrajectory>("RobotJointStateTrajectory");
+    factory.registerNodeType<tree::RobotPlayTrajectory>("RobotPlayTrajectory");
     factory.registerNodeType<tree::RobotCollisionCheck>("RobotCollisionCheck");
     factory.registerNodeType<tree::RobotSetJointImpedance>("RobotSetJointImpedance");
     

@@ -25,6 +25,7 @@ add_library(tree_hhcm SHARED
   src/robot_sense.cpp
   src/robot_move.cpp
   src/robot_joint_state_trajectory.cpp
+  src/robot_play_trajectory.cpp
   src/robot_gripper_ctrl.cpp
   src/robot_collision_check.cpp
   src/robot_set_joint_impedance.cpp
