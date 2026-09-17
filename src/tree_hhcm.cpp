@@ -3,6 +3,7 @@
 #include <tree_hhcm/common/load_pose_from_config.h>
 #include <tree_hhcm/common/load_param_from_config.h>
 #include <tree_hhcm/common/mission_group.h>
+#include <tree_hhcm/common/string_format.h>
 
 #include <tree_hhcm/ros/node_provider.h>
 #include <tree_hhcm/ros/mission_tracker.h>
@@ -29,6 +30,7 @@ BT_REGISTER_NODES(factory)
     factory.registerNodeType<tree::LoadPoseFromConfig>("LoadPoseFromConfig");
     factory.registerNodeType<tree::LoadParamFromConfig>("LoadParamFromConfig");
     factory.registerNodeType<tree::MissionGroup>("MissionGroup");
+    factory.registerNodeType<tree::StringFormat>("StringFormat");
 
     factory.registerNodeType<tree::NodeProvider>("NodeProvider");
     factory.registerNodeType<tree::MissionTracker>("MissionTracker");

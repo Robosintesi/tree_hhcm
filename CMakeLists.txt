@@ -38,6 +38,7 @@ add_library(tree_hhcm SHARED
   src/common.cpp
   src/load_pose_from_config.cpp
   src/load_param_from_config.cpp
+  src/string_format.cpp
   src/anime_log_metrics.cpp
   )
 
