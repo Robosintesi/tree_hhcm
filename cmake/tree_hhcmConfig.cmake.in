@@ -3,8 +3,12 @@
 include(CMakeFindDependencyMacro)
 
 find_dependency(cartesian_interface)
+find_dependency(cartesian_interface_ros)
 find_dependency(behaviortree_cpp)
 find_dependency(rclcpp)
+find_dependency(xbot_msgs)
+find_dependency(std_srvs)
+find_dependency(std_msgs)
 
 set(export_config_name "@PROJECT_NAME@")
 set_and_check(${export_config_name}_TARGETS

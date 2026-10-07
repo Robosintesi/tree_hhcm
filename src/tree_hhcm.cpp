@@ -2,8 +2,11 @@
 
 #include <tree_hhcm/common/load_pose_from_config.h>
 #include <tree_hhcm/common/load_param_from_config.h>
+#include <tree_hhcm/common/mission_group.h>
+#include <tree_hhcm/common/string_format.h>
 
 #include <tree_hhcm/ros/node_provider.h>
+#include <tree_hhcm/ros/mission_tracker.h>
 #include <tree_hhcm/ros/wait_setbool.h>
 
 #include <tree_hhcm/robot/robot_loader.h>
@@ -11,7 +14,9 @@
 #include <tree_hhcm/robot/robot_sense.h>
 #include <tree_hhcm/robot/robot_gripper_ctrl.h>
 #include <tree_hhcm/robot/robot_joint_state_trajectory.h>
+#include <tree_hhcm/robot/robot_play_trajectory.h>
 #include <tree_hhcm/robot/robot_collision_check.h>
+#include <tree_hhcm/robot/robot_set_joint_impedance.h>
 
 #include <tree_hhcm/cartesio/cartesio_cartesian_task_control.h>
 #include <tree_hhcm/cartesio/cartesio_loader.h>
@@ -24,8 +29,11 @@ BT_REGISTER_NODES(factory)
 {
     factory.registerNodeType<tree::LoadPoseFromConfig>("LoadPoseFromConfig");
     factory.registerNodeType<tree::LoadParamFromConfig>("LoadParamFromConfig");
+    factory.registerNodeType<tree::MissionGroup>("MissionGroup");
+    factory.registerNodeType<tree::StringFormat>("StringFormat");
 
     factory.registerNodeType<tree::NodeProvider>("NodeProvider");
+    factory.registerNodeType<tree::MissionTracker>("MissionTracker");
     factory.registerNodeType<tree::WaitSetBool>("WaitSetBool");
 
     factory.registerNodeType<tree::RobotLoader>("RobotLoader");
@@ -33,7 +41,9 @@ BT_REGISTER_NODES(factory)
     factory.registerNodeType<tree::RobotMove>("RobotMove");
     factory.registerNodeType<tree::RobotGripperCtrl>("RobotGripperCtrl");
     factory.registerNodeType<tree::RobotJointStateTrajectory>("RobotJointStateTrajectory");
+    factory.registerNodeType<tree::RobotPlayTrajectory>("RobotPlayTrajectory");
     factory.registerNodeType<tree::RobotCollisionCheck>("RobotCollisionCheck");
+    factory.registerNodeType<tree::RobotSetJointImpedance>("RobotSetJointImpedance");
     
     factory.registerNodeType<tree::CartesioLoader>("CartesioLoader");
     factory.registerNodeType<tree::CartesioSolve>("CartesioSolve");

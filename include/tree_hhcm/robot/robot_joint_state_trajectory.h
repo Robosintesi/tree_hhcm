@@ -3,6 +3,7 @@
 
 #include <tree_hhcm/common/common.h>
 #include <xbot2_interface/xbotinterface2.h>
+#include <set>
 
 // behavior tree
 #include <behaviortree_cpp/bt_factory.h>
@@ -31,6 +32,8 @@ private:
     Eigen::VectorXd _qstart, _qgoal, _deltaq;
     double _duration;
     double _time;
+    std::set<int> _keep;   // indices of the controlled joints
+    bool _compose;         // write only controlled joints 
     Printer _p;
 };
 
