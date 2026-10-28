@@ -8,6 +8,7 @@
 #include <tree_hhcm/ros/node_provider.h>
 #include <tree_hhcm/ros/mission_tracker.h>
 #include <tree_hhcm/ros/wait_setbool.h>
+#include <tree_hhcm/ros/load_param_from_ros.h>
 
 #include <tree_hhcm/robot/robot_loader.h>
 #include <tree_hhcm/robot/robot_move.h>
@@ -35,6 +36,7 @@ BT_REGISTER_NODES(factory)
     factory.registerNodeType<tree::NodeProvider>("NodeProvider");
     factory.registerNodeType<tree::MissionTracker>("MissionTracker");
     factory.registerNodeType<tree::WaitSetBool>("WaitSetBool");
+    factory.registerNodeType<tree::LoadParamFromRos>("LoadParamFromRos");
 
     factory.registerNodeType<tree::RobotLoader>("RobotLoader");
     factory.registerNodeType<tree::RobotSense>("RobotSense");
