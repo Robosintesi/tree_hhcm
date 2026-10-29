@@ -2,6 +2,7 @@
 
 #include <map>
 #include <cmath>
+#include <algorithm>
 
 using namespace tree;
 using namespace std::string_literals;
@@ -103,6 +104,11 @@ BT::NodeStatus RobotPlayTrajectory::onStart()
         throw BT::RuntimeError("RobotPlayTrajectory: phase "s + phase + " has fewer than 2 waypoints");
     }
 
+    if(getInput<bool>("reverse").value_or(false))
+    {
+        std::reverse(_points.begin(), _points.end());
+    }
+
     _duration = (_points.size() - 1) * _dt;
 
     double maxStartError = getInput<double>("max_start_error").value_or(0.05);
@@ -175,6 +181,7 @@ BT::PortsList RobotPlayTrajectory::providedPorts()
         BT::InputPort<std::string>("phase", "Phase to play: approach, grasp or lift"),
         BT::InputPort<double>("rate", "Playback speed scale, 1.0 plays at the planned speed"),
         BT::InputPort<double>("max_start_error", "Fail if any joint is farther than this [rad] from the first waypoint. Default 0.05"),
+        BT::InputPort<bool>("reverse", "Play the phase backwards, from its last waypoint to its first. Default false"),
         BT::OutputPort<Eigen::VectorXd>("q", "Current joint configuration")
     };
 }
